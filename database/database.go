@@ -27,6 +27,19 @@ func Conn() *sql.DB {
 	return db
 }
 
+func DeleteById(table string, id string) error {
+	stmt, err := Conn().Prepare("DELETE FROM " + table + " WHERE id=$1;")
+	if err != nil {
+		return fmt.Errorf("can't prepare delete statement: %w", err)
+	}
+
+	if _, err = stmt.Exec(id); err != nil {
+		return fmt.Errorf("can't execute delete: %w", err)
+	}
+
+	return nil
+}
+
 func createCustomerTable() error {
 	createTable := `CREATE TABLE IF NOT EXISTS customers (
 		id SERIAL PRIMARY KEY,
