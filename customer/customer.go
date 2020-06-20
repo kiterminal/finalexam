@@ -5,10 +5,10 @@ import (
 	"github.com/kiterminal/finalexam/database"
 	"github.com/kiterminal/finalexam/middleware"
 	"net/http"
-)
+)a
 
 func getCustomers(c *gin.Context) {
-	stmt, err := database.Conn().Prepare("SELECT id, name, email, status FROM customers")
+	stmt, err := database.DirectConn().Prepare("SELECT id, name, email, status FROM customers")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -37,7 +37,7 @@ func getCustomers(c *gin.Context) {
 func getCustomer(c *gin.Context) {
 	id := c.Param("id")
 
-	stmt, err := database.Conn().Prepare("SELECT id, name, email, status FROM customers WHERE id=$1")
+	stmt, err := database.DirectConn().Prepare("SELECT id, name, email, status FROM customers WHERE id=$1")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -62,7 +62,7 @@ func createCustomer(c *gin.Context) {
 	}
 
 	var customer Customer
-	err := database.Conn().QueryRow("INSERT INTO customers (name, email, status) VALUES ($1, $2, $3) RETURNING id, name, email, status", reqBody.Name, reqBody.Email, reqBody.Status).Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Status)
+	err := database.DirectConn().QueryRow("INSERT INTO customers (name, email, status) VALUES ($1, $2, $3) RETURNING id, name, email, status", reqBody.Name, reqBody.Email, reqBody.Status).Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,7 +81,7 @@ func updateCustomer(c *gin.Context) {
 	}
 
 	var customer Customer
-	err := database.Conn().QueryRow("UPDATE customers SET name=$2,email=$3,status=$4 WHERE id=$1 RETURNING id, name, email, status;", id, reqBody.Name, reqBody.Email, reqBody.Status).Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Status)
+	err := database.DirectConn().QueryRow("UPDATE customers SET name=$2,email=$3,status=$4 WHERE id=$1 RETURNING id, name, email, status;", id, reqBody.Name, reqBody.Email, reqBody.Status).Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cannot find customer " + id})
 		return

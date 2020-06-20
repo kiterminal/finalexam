@@ -11,6 +11,20 @@ import (
 
 var db *sql.DB
 
+type Connector interface {
+	DeleteById(table string, id string) error
+}
+
+type postgres struct {
+	conn *sql.DB
+}
+
+func Connect() Connector {
+	return &postgres{
+		conn: db,
+	}
+}
+
 func init() {
 	var err error
 	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
@@ -23,12 +37,12 @@ func init() {
 	}
 }
 
-func Conn() *sql.DB {
+func DirectConn() *sql.DB {
 	return db
 }
 
-func DeleteById(table string, id string) error {
-	stmt, err := Conn().Prepare("DELETE FROM " + table + " WHERE id=$1;")
+func (p *postgres) DeleteById(table string, id string) error {
+	stmt, err := p.conn.Prepare("DELETE FROM " + table + " WHERE id=$1;")
 	if err != nil {
 		return fmt.Errorf("can't prepare delete statement: %w", err)
 	}
