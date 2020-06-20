@@ -104,7 +104,7 @@ func deleteCustomer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Customer has been deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "customer deleted"})
 }
 
 func SetupRouter() *gin.Engine {
