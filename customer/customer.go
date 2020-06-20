@@ -5,7 +5,7 @@ import (
 	"github.com/kiterminal/finalexam/database"
 	"github.com/kiterminal/finalexam/middleware"
 	"net/http"
-)a
+)
 
 func getCustomers(c *gin.Context) {
 	stmt, err := database.DirectConn().Prepare("SELECT id, name, email, status FROM customers")
