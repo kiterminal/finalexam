@@ -54,23 +54,6 @@ func getCustomer(c *gin.Context) {
 	c.JSON(http.StatusOK, customer)
 }
 
-func createCustomer(c *gin.Context) {
-	var reqBody Customer
-	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var customer Customer
-	err := database.DirectConn().QueryRow("INSERT INTO customers (name, email, status) VALUES ($1, $2, $3) RETURNING id, name, email, status", reqBody.Name, reqBody.Email, reqBody.Status).Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Status)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, customer)
-}
-
 func updateCustomer(c *gin.Context) {
 	id := c.Param("id")
 

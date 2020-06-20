@@ -10,11 +10,11 @@ type mockConnector struct {
 	database.Connector
 }
 
-func (m mockConnector) DeleteById(table string, id string) error {
+func (m mockConnector) DeleteCustomerById(id string) error {
 	return errors.New("can't prepare delete statement")
 }
 
-func TestDeleteCustomerService(t *testing.T) {
+func TestCreateCustomerService(t *testing.T) {
 	m := mockConnector{}
 	err := deleteCustomerService(m, "1")
 

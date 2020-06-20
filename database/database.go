@@ -12,7 +12,8 @@ import (
 var db *sql.DB
 
 type Connector interface {
-	DeleteById(table string, id string) error
+	CreateCustomer(name string, email string, status string) (int, string, string, string, error)
+	DeleteCustomerById(id string) error
 }
 
 type postgres struct {
@@ -41,8 +42,23 @@ func DirectConn() *sql.DB {
 	return db
 }
 
-func (p *postgres) DeleteById(table string, id string) error {
-	stmt, err := p.conn.Prepare("DELETE FROM " + table + " WHERE id=$1;")
+func (p *postgres) CreateCustomer(name string, email string, status string) (int, string, string, string, error) {
+	insertSQL := `INSERT INTO customers (name, email, status) 
+		VALUES ($1, $2, $3) 
+		RETURNING id, name, email, status;`
+	row := p.conn.QueryRow(insertSQL, name, email, status)
+
+	var id int
+	err := row.Scan(&id, &name, &email, &status)
+	if err != nil {
+		return id, name, email, status, fmt.Errorf("can't insert statement: %w", err)
+	}
+
+	return id, name, email, status, nil
+}
+
+func (p *postgres) DeleteCustomerById(id string) error {
+	stmt, err := p.conn.Prepare("DELETE FROM customers WHERE id=$1;")
 	if err != nil {
 		return fmt.Errorf("can't prepare delete statement: %w", err)
 	}

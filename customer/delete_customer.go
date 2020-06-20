@@ -11,7 +11,7 @@ func deleteCustomer(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := deleteCustomerService(connector, id); err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"err": err})
 		return
 	}
 
@@ -19,7 +19,7 @@ func deleteCustomer(c *gin.Context) {
 }
 
 func deleteCustomerService(connector database.Connector, id string) error {
-	if err := connector.DeleteById("customers", id); err != nil {
+	if err := connector.DeleteCustomerById(id); err != nil {
 		return err
 	}
 
