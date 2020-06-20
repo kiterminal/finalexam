@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -14,21 +15,30 @@ func init() {
 	var err error
 	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("Connect to database error", err)
+		log.Fatal("connect to database error", err)
 	}
 
+	if err = createCustomerTable(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Conn() *sql.DB {
+	return db
+}
+
+func createCustomerTable() error {
 	createTable := `CREATE TABLE IF NOT EXISTS customers (
 		id SERIAL PRIMARY KEY,
 		name TEXT,
 		email TEXT,
 		status TEXT
 	);`
-	_, err = db.Exec(createTable)
-	if err != nil {
-		log.Fatal("Can't create table customers ", err)
-	}
-}
 
-func Conn() *sql.DB {
-	return db
+	_, err := db.Exec(createTable)
+	if err != nil {
+		return fmt.Errorf("can't create customers table: %w", err)
+	}
+
+	return nil
 }
