@@ -3,6 +3,7 @@ package customer
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kiterminal/finalexam/database"
+	"github.com/kiterminal/finalexam/middleware"
 	"net/http"
 )
 
@@ -108,6 +109,8 @@ func deleteCustomer(c *gin.Context) {
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(middleware.Authorization)
 
 	r.GET("/customers", getCustomers)
 	r.POST("/customers", createCustomer)
